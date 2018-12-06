@@ -48,17 +48,16 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.schema-version="2.2-r1"
 
-RUN git clone https://github.com/turtlecoin/turtlecoind-ha.git /usr/local/turtlecoin-ha
 
-COPY --from=builder /home/sups/Development/NBX/src/* /usr/local/turtlecoin-ha/
+COPY --from=builder /home/sups/Development/NBX/src/nibble-service /usr/local/bin/
+COPY --from=builder /home/sups/Development/NBX/src/Nibbled /usr/local/bin/
 
-RUN mkdir -p /var/lib/turtlecoind && npm install \
-	nonce \
-	shelljs \
-	node-pty \
-	sha256 \
-	socket.io \
-	turtlecoin-rpc
+RUN mkdir /root/.NibbleClassic
 
-WORKDIR /usr/local/turtlecoin-ha
-CMD [ "pm2-runtime", "start", "service.js" ]
+EXPOSE 17120
+EXPOSE 17122
+
+VOLUME /root/.NibbleClassic
+
+ENTRYPOINT ["/usr/local/bin/Nibbled"]
+CMD ["--no-console","--rpc-bind-ip","0.0.0.0","--rpc-bind-port","17122","--p2p-bind-port","171220"]
